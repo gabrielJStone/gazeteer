@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "jquery": "^3.6.4",
+    "leaflet-easybutton": "^2.4.0",
+    "remixicon": "^3.2.0"
+  }
+}

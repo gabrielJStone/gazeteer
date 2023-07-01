@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- TITLE -->
+    <title>Gazetteer</title>
+    <!-- FAVICON -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <!-- LEAFLET -->
+    <link rel="stylesheet" href="./libraries/leaflet/leaflet/leaflet.css">
+    <script src="./libraries/leaflet/leaflet/leaflet.js"></script>
+    <!-- FONTAWESOME -->
+    <link rel="stylesheet" href="./libraries/fontawesome/fontawesome-free-6.4.0-web/css/fontawesome.css">
+    <link rel="stylesheet" href="./libraries/fontawesome/fontawesome-free-6.4.0-web/css/brands.css">
+    <link rel="stylesheet" href="./libraries/fontawesome/fontawesome-free-6.4.0-web/css/solid.css">
+    <link rel="stylesheet" href="./libraries/fontawesome/fontawesome-free-6.4.0-web/css/regular.css">
+    <link rel="stylesheet" href="./libraries/fontawesome/fontawesome-free-6.4.0-web/css/all.min.css">
+    <!-- EASY BUTTONS -->
+    <link rel="stylesheet" href="./libraries/Leaflet.EasyButton/src/easy-button.css">
+    <!-- MARKER CLUSTER -->
+    <link rel="stylesheet" href="./libraries/Leaflet.markercluster-1.4.1/dist/MarkerCluster.css">
+    <link rel="stylesheet" href="./libraries/Leaflet.markercluster-1.4.1/dist/MarkerCluster.Default.css">
+    <!-- BOOTSTRAP -->
+    <link rel="stylesheet" href="./libraries/bootstrap-5.2.3-dist/css/bootstrap.min.css">
+    <!-- STYLESHEET -->
+    <link rel="stylesheet" href="styles/style.css" type="text/css">
+</head>
+<body>
+
+  <div id="preloader"></div>
+
+  <!-- COUNTRY INFO modal -->
+  <div class="modal fade show" id="countryModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false" data-bs-backdrop="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+      <div class="modal-content modeContents mx-auto shadow">
+        <div class="modal-header">
+          <h5 class="modal-title ms-4 exampleModalLabel title titleSection"></h5>
+          <img class="flag me-3">
+        </div>
+        <div>
+          <table class="table table-striped mb-0">
+            <tbody>
+              <tr>
+                <th scope="row"></th>
+                <td><i class="fa-sharp fa-solid fa-city"></i></td>
+                <td class="text-start">Capital</td>
+                <td id="countryCapital" class="text-end"></td>
+                <th></th>
+              </tr>
+              <tr>
+                <th scope="row"></th>
+                <td><i class="fa-solid fa-user-group"></i></td>
+                <td class="text-start">Population</td>
+                <td id="countryPopulation" class="text-end"></td>
+                <th></th>
+              </tr>
+              <tr>
+                <th scope="row"></th>
+                <td><i class="fa-solid fa-square-full"></i></td>
+                <td class="text-start">Area</td>
+                <td id="countryArea" class="text-end"></td>
+                <th></th>
+              </tr>
+              <tr>
+                <th scope="row"></th>
+                <td><i class="fa-sharp fa-solid fa-earth-europe"></i></td>
+                <td class="text-start">Continent</td>
+                <td id="countryContinent" class="text-end"></td>
+                <th></th>
+              </tr>
+              <tr>
+                <th scope="row"></th>
+                <td><i class="fa-solid fa-money-bill"></i></td>
+                <td class="text-start">Currency</td>
+                <td id="countryCurrency" class="text-end"></td>
+                <th></th>
+              </tr>
+              <tr>
+                <th scope="row"></th>
+                <td><i class="fa-solid fa-id-badge"></i></td>
+                <td class="text-start">ISO Code</td>
+                <td id="countryCode" class="text-end"></td>
+                <th></th>
+              </tr>
+            </tbody>
+          </table>
+          <div id="wiki">
+            <div class="ps-3 pe-3 ms-2 me-2" id="summary" class="modal-dialog-scrollable"></div>
+            <a class="" id="wikiLink" target="blank"></a>
+          </div>
+          </div>
+          <button type="button" class="column mybtn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+        </div>  
+      </div>
+    </div>
+  </div>
+  <!-- WEATHER modal -->
+  <div class="modal fade show" id="weatherModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false" data-bs-backdrop="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title exampleModalLabel title titleSection"></h5>
+          <img class="flag">
+        </div>
+        <!-- today forecast -->
+        <div class="container text-light" id="weatherDiv">
+        <div class="row">
+          <div class="col border p-3 text-start opaque">
+            <h4 class="fw-bold fs-2" id="weatherTitle"></h4>
+            <div class="row align-items-center">
+              <div class="col fw-bold fs-5" id="todayText"></div>
+              <img class="col img-fluid" id="todayIcon"></img>
+              <div class="col fw-bold fs-5" id="todayTemp"></div>
+            </div>
+            </div>
+            <!-- hourly forecast -->
+          <div class="container" id="hourly">
+            <div class="row">
+              <div class="row flex-nowrap" id="nextHour"></div>
+            </div>
+          </div>
+          <!-- tomorrow forecast -->
+          <div class="row">
+            <div class="col-6 border p-3 text-start opaque">
+              <div class="row">
+                <div class="col-6" id="tomorrowDate"></div>
+                <div class="col-6">
+                  <img class="col img-fluid" id="tomorrowIcon" src="https://cdn.weatherapi.com/weather/64x64/day/119.png">
+                </div>
+                <div class="row"></div>
+                  <div class="col-6" id="tomorrowTemp"></div>
+              </div>
+            </div>
+              <!-- day after forecast -->
+              <div class="col-6 border p-3 text-start opaque">
+                <div class="row">
+                  <div class="col-6" id="dayAfterDate"></div>
+                  <div class="col-6">
+                    <img id="dayAfterIcon">
+                  </div>
+                  <div class="row"></div>
+                    <div class="col-6" id="dayAfterTemp">Temp</div>
+                </div>
+              </div>
+              </div>
+        </div>
+          </div>
+          <button type="button" class="column mybtn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- CURRENCY modal -->
+  <div class="modal fade show" id="currencyModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false" data-bs-backdrop="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <div class="titleSection"> -->
+            <h5 class="modal-title exampleModalLabel title titleSection"></h5>
+            <img class="flag">
+          <!-- </div> -->
+        </div>
+        <div>
+          <div class="modal-body" id="currencyDiv">
+            <table class="table table-striped mb-0">
+              <tbody>
+                <tr>
+                  <td scope="row" colspan="2"><h4>Exchange Rate</h4></td>
+                </tr>
+                <tr>
+                  <th scope="row"><h6><span class="subTitle">USD</span>:</h6></th>
+                  <td scope="col"><input class="currencyInput" id="baseCurrency" type="number" min="1" value="1"></td>
+                </tr>
+                <tr>
+                  <td scope="row"><h6 id="exchangeRate"></h6></td>
+                  <td><input type="number" class="currencyInput" id="foreignCurrency" min="0"></input></td>
+                </tr>
+              </tbody>
+              </table>
+          </div>
+        </div>
+        <button type="button" class="column mybtn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+      </div>
+    </div>
+  </div>
+  <!-- NEWS modal -->
+  <div class="modal fade show modal-lg" id="newsModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false" data-bs-backdrop="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <div class="titleSection"> -->
+            <h5 class="modal-title exampleModalLabel title titleSection"></h5>
+            <img class="flag">
+          <!-- </div> -->
+        </div>
+        <div id="errorDiv">
+          <!-- <h1>Oh... </h1>
+          <h2>No news available on this country right now.</h2> -->
+        </div>
+        <div id="scrollDiv">
+          <!-- News Modal 1 -->
+          <div class="newsContainer" id="newsDiv1">
+            <div class="modal-body newsDiv">
+              <div id="section1" class="row">
+                  <h3 id="title1" class="col-6 articleTitle">Rishi Sunak to meet ethics adviser over Suella Braverman speeding claims</h3>
+                  <figure id="fig1" class="col-6">
+                    <img id="media1" class="newsMedia" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/ff/BBC_News.svg/2560px-BBC_News.svg.png">
+                    <div class="newsHeading" id="heading1">
+                      <figcaption id="author1" class="author heading">JANE DOE</figcaption>
+                      <figcaption id="date1" class="date heading">2023-05-21 15:55</figcaption>
+                    </div>
+                </div>
+                <a class="btn btn-secondary btn-sm expand-btn" id="collapseBtn1" data-bs-toggle="collapse" href="#collapse1" role="button" aria-expanded="false" aria-controls="collapse1">
+                  Read more
+                </a>
+                </figure>
+                <div class="collapse" id="collapse1">
+                  <h4 id="excerpt1" class="excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h4>
+                  <p id="summary1" class="summary">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                  <a id="link1" class="newsLink" target="_blank">Read full article</a>
+                </div>
+            </div>
+        </div>
+        <!-- News Modal 2 -->
+        <div class="newsContainer" id="newsDiv2">
+          <div class="modal-body newsDiv">
+            <div id="section2" class="row">
+                <h3 id="title2" class="col-6 articleTitle">Rishi Sunak to meet ethics adviser over Suella Braverman speeding claims</h3>
+                <figure id="fig2" class="col-6">
+                  <img id="media2" class="newsMedia" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/ff/BBC_News.svg/2560px-BBC_News.svg.png">
+                  <div class="newsHeading" id="heading2">
+                    <figcaption id="author2" class="author heading">JANE DOE</figcaption>
+                    <figcaption id="date2" class="date heading">2023-05-21 15:55</figcaption>
+                  </div>
+              </div>
+              <a class="btn btn-secondary btn-sm expand-btn" id="collapseBtn2" data-bs-toggle="collapse" href="#collapse2" role="button" aria-expanded="false" aria-controls="collapse2">
+                Read more
+              </a>
+              </figure>
+              <div class="collapse" id="collapse2">
+                <h4 id="excerpt2" class="excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h4>
+                <p id="summary2" class="summary">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <a id="link2" class="newsLink" target="_blank">Read full article</a>
+              </div>
+          </div>
+      </div>
+      <!-- News Modal 3 -->
+      <div class="newsContainer" id="newsDiv3">
+        <div class="modal-body newsDiv">
+          <div id="section3" class="row">
+              <h3 id="title3" class="col-6 articleTitle">Rishi Sunak to meet ethics adviser over Suella Braverman speeding claims</h3>
+              <figure id="fig3" class="col-6">
+                <img id="media3" class="newsMedia" src="https://upload.wikimedia.org/wikipedia/en/thumb/f/ff/BBC_News.svg/2560px-BBC_News.svg.png">
+                <div class="newsHeading" id="heading3">
+                  <figcaption id="author3" class="author heading">JANE DOE</figcaption>
+                  <figcaption id="date3" class="date heading">2023-05-21 15:55</figcaption>
+                </div>
+            </div>
+            <a class="btn btn-secondary btn-sm expand-btn" id="collapseBtn3" data-bs-toggle="collapse" href="#collapse3" role="button" aria-expanded="false" aria-controls="collapse3">
+              Read more
+            </a>
+            </figure>
+            <div class="collapse" id="collapse3">
+              <h4 id="excerpt3" class="excerpt">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</h4>
+              <p id="summary3" class="summary">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+              <a id="link3" class="newsLink" target="_blank">Read full article</a>
+            </div>
+        </div>
+    </div>
+  </div>
+  <button type="button" class="column mybtn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+    </div>
+  </div>
+  </div>
+  <!-- Timezone modal -->
+  <div class="modal fade show" id="timezoneModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="false" data-bs-backdrop="false" data-backdrop="false">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <!-- <div class="titleSection"> -->
+            <h5 class="modal-title exampleModalLabel title titleSection"></h5>
+            <img class="flag">
+          <!-- </div> -->
+        </div>
+        <div>
+          <div class="modal-body" id="timezoneDiv">
+            <table class="table table-striped mb-0">
+              <tbody>
+                <th scrope="row" colspan="6" class="fs-5" id="timezoneTitle"></th>
+                <tr>
+                  <th scope="row"></th>
+                  <td><i class="fa-regular fa-clock"></i></td>
+                  <td class="text-start">Local Time</td>
+                  <td id="timezoneTime" class="text-end"></td>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th scope="row"></th>
+                  <td><i class="fa-solid fa-calendar"></i></td>
+                  <td class="text-start">Date</td>
+                  <td id="timezoneDate" class="text-end"></td>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th scope="row"></th>
+                  <td><i class="fa-solid fa-arrow-right-arrow-left"></i></td>
+                  <td class="text-start">GMT Offset</td>
+                  <td id="timezoneOffset" class="text-end"></td>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th scope="row"></th>
+                  <td><i class="fa-solid fa-sun"></i></td>
+                  <td class="text-start">Sunrise</td>
+                  <td id="timezoneSunrise" class="text-end"></td>
+                  <th></th>
+                </tr>
+                <tr>
+                  <th scope="row"></th>
+                  <td><i class="fa-regular fa-sun"></i></td>
+                  <td class="text-start">Sunset</td>
+                  <td id="timezoneSunset" class="text-end"></td>
+                  <th></th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <h6 id="timezoneError"></h6>
+        </div>
+        <button type="button" class="column mybtn-close" data-bs-dismiss="modal" aria-label="Close">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAP CONTAINER -->
+  <div id="mapContainer">
+    
+    <!-- COUNTRY SELECTOR -->
+    <form id="form">
+      <select id="countrySelect" name="countrySelect">
+        <optgroup label="Current">
+          <option id="current-country" value="GB"></option>
+        </optgroup>
+        <optgroup id="countries" label="Countries">
+        </optgroup>
+      </select>
+    </form>
+
+    <!-- MAP -->
+    <div id="map"></div>
+    
+    
+  </div>
+
+  <script type="application/javascript" src="./libraries/jQuery/jquery-3.6.4.min.js"></script>
+  <script src="./libraries/Leaflet.EasyButton/src/easy-button.js"></script>
+  <script src="./libraries/Leaflet.markercluster-1.4.1/dist/leaflet.markercluster.js"></script>
+  <script src="libraries/bootstrap-5.2.3-dist/js/bootstrap.min.js"></script>
+  <!-- <script src="libraries/fontawesome/fontawesome-free-6.4.0-web/js/all.min.js"></script> -->
+  <script src="scripts/script.js"></script>  
+</body>
+</html>
